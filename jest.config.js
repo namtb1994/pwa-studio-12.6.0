@@ -39,90 +39,8 @@ const path = require('path');
 // transpile, or 'lib' for code that doesn't have to.
 const testGlob = '/**/{src,lib,_buildpack}/**/__tests__/*.(test|spec).js';
 
-const globals = {
-    POSSIBLE_TYPES: {
-        CartAddressInterface: ['BillingCartAddress', 'ShippingCartAddress'],
-        CartItemInterface: [
-            'SimpleCartItem',
-            'VirtualCartItem',
-            'DownloadableCartItem',
-            'BundleCartItem',
-            'ConfigurableCartItem'
-        ],
-        ProductInterface: [
-            'VirtualProduct',
-            'SimpleProduct',
-            'DownloadableProduct',
-            'GiftCardProduct',
-            'BundleProduct',
-            'GroupedProduct',
-            'ConfigurableProduct'
-        ],
-        CategoryInterface: ['CategoryTree'],
-        MediaGalleryInterface: ['ProductImage', 'ProductVideo'],
-        ProductLinksInterface: ['ProductLinks'],
-        AggregationOptionInterface: ['AggregationOption'],
-        LayerFilterItemInterface: ['LayerFilterItem', 'SwatchLayerFilterItem'],
-        PhysicalProductInterface: [
-            'SimpleProduct',
-            'GiftCardProduct',
-            'BundleProduct',
-            'GroupedProduct',
-            'ConfigurableProduct'
-        ],
-        CustomizableOptionInterface: [
-            'CustomizableAreaOption',
-            'CustomizableDateOption',
-            'CustomizableDropDownOption',
-            'CustomizableMultipleOption',
-            'CustomizableFieldOption',
-            'CustomizableFileOption',
-            'CustomizableRadioOption',
-            'CustomizableCheckboxOption'
-        ],
-        CustomizableProductInterface: [
-            'VirtualProduct',
-            'SimpleProduct',
-            'DownloadableProduct',
-            'GiftCardProduct',
-            'BundleProduct',
-            'ConfigurableProduct'
-        ],
-        SwatchDataInterface: [
-            'ImageSwatchData',
-            'TextSwatchData',
-            'ColorSwatchData'
-        ],
-        SwatchLayerFilterItemInterface: ['SwatchLayerFilterItem']
-    },
-    STORE_NAME: 'Venia',
-    STORE_VIEW_CODE: 'default',
-    AVAILABLE_STORE_VIEWS: [
-        {
-            base_currency_code: 'USD',
-            code: 'default',
-            default_display_currency_code: 'USD',
-            id: 1,
-            locale: 'en_US',
-            store_name: 'Default Store View'
-        },
-        {
-            base_currency_code: 'EUR',
-            code: 'fr',
-            default_display_currency_code: 'EUR',
-            id: 2,
-            locale: 'fr_FR',
-            store_name: 'French Store View'
-        }
-    ],
-    DEFAULT_LOCALE: 'en-US',
-    DEFAULT_COUNTRY_CODE: 'US'
-};
-
 // Reusable test configuration for Venia UI and storefront packages.
 const testReactComponents = inPackage => ({
-    // Define global variables.
-    globals,
     // Expose jsdom to tests.
     moduleNameMapper: {
         // Mock binary files to avoid excess RAM usage.
@@ -132,27 +50,22 @@ const testReactComponents = inPackage => ({
         // it hard to test React components using DOM classnames.
         // This mapping forces CSS Modules to return literal identies,
         // so e.g. `classes.root` is always `"root"`.
-        '\\.(module.)?css$': 'identity-obj-proxy',
+        '\\.css$': 'identity-obj-proxy',
         '\\.svg$': 'identity-obj-proxy',
         '@magento/venia-drivers':
             '<rootDir>/packages/venia-ui/lib/drivers/index.js'
     },
-    moduleFileExtensions: [
-        'ac.js',
-        'ee.js',
-        'mos.js',
-        'ce.js',
-        'js',
-        'json',
-        'jsx',
-        'node'
-    ],
+    moduleFileExtensions: ['ee.js', 'ce.js', 'js', 'json', 'jsx', 'node'],
     // Reproduce the Webpack resolution config that lets Venia import
     // from `src` instead of with relative paths:
     modulePaths: [
         inPackage(),
         inPackage('node_modules'),
         '<rootDir>/node_modules'
+    ],
+    // Set up Enzyme React 16 adapter for testing React components
+    setupFilesAfterEnv: [
+        path.join('<rootDir>', 'scripts', 'jest-enzyme-setup.js')
     ],
     // Give jsdom a real URL for router testing.
     testURL: 'http://localhost/',
@@ -170,7 +83,114 @@ const testReactComponents = inPackage => ({
     // full compile.
     transformIgnorePatterns: [
         'node_modules/(?!@magento|jarallax|video-worker/)'
-    ]
+    ],
+    globals: {
+        UNION_AND_INTERFACE_TYPES: {
+            __schema: {
+                types: [
+                    {
+                        kind: 'INTERFACE',
+                        name: 'ProductInterface',
+                        possibleTypes: [
+                            { name: 'VirtualProduct' },
+                            { name: 'SimpleProduct' },
+                            { name: 'DownloadableProduct' },
+                            { name: 'BundleProduct' },
+                            { name: 'GiftCardProduct' },
+                            { name: 'GroupedProduct' },
+                            { name: 'ConfigurableProduct' }
+                        ]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'MediaGalleryInterface',
+                        possibleTypes: [
+                            { name: 'ProductImage' },
+                            { name: 'ProductVideo' }
+                        ]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'ProductLinksInterface',
+                        possibleTypes: [{ name: 'ProductLinks' }]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'CategoryInterface',
+                        possibleTypes: [{ name: 'CategoryTree' }]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'LayerFilterItemInterface',
+                        possibleTypes: [
+                            { name: 'LayerFilterItem' },
+                            { name: 'SwatchLayerFilterItem' }
+                        ]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'PhysicalProductInterface',
+                        possibleTypes: [
+                            { name: 'SimpleProduct' },
+                            { name: 'BundleProduct' },
+                            { name: 'GiftCardProduct' },
+                            { name: 'GroupedProduct' },
+                            { name: 'ConfigurableProduct' }
+                        ]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'CustomizableOptionInterface',
+                        possibleTypes: [
+                            { name: 'CustomizableAreaOption' },
+                            { name: 'CustomizableDateOption' },
+                            { name: 'CustomizableDropDownOption' },
+                            { name: 'CustomizableMultipleOption' },
+                            { name: 'CustomizableFieldOption' },
+                            { name: 'CustomizableFileOption' },
+                            { name: 'CustomizableRadioOption' },
+                            { name: 'CustomizableCheckboxOption' }
+                        ]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'CustomizableProductInterface',
+                        possibleTypes: [
+                            { name: 'VirtualProduct' },
+                            { name: 'SimpleProduct' },
+                            { name: 'DownloadableProduct' },
+                            { name: 'BundleProduct' },
+                            { name: 'GiftCardProduct' },
+                            { name: 'ConfigurableProduct' }
+                        ]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'CartItemInterface',
+                        possibleTypes: [
+                            { name: 'SimpleCartItem' },
+                            { name: 'VirtualCartItem' },
+                            { name: 'ConfigurableCartItem' }
+                        ]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'CartAddressInterface',
+                        possibleTypes: [
+                            { name: 'ShippingCartAddress' },
+                            { name: 'BillingCartAddress' }
+                        ]
+                    },
+                    {
+                        kind: 'INTERFACE',
+                        name: 'SwatchLayerFilterItemInterface',
+                        possibleTypes: [{ name: 'SwatchLayerFilterItem' }]
+                    }
+                ]
+            }
+        },
+        STORE_NAME: 'Venia'
+    }
 });
 
 const configureProject = (dir, displayName, cb) => {
@@ -234,35 +254,18 @@ const jestConfig = {
         configureProject('babel-preset-peregrine', 'Babel Preset', () => ({
             testEnvironment: 'node'
         })),
-        configureProject('pagebuilder', 'Pagebuilder', inPackage => ({
-            ...testReactComponents(inPackage),
-            setupFiles: [
-                // Shim DOM properties not supported by jsdom
-                inPackage('scripts/shim.js')
-            ]
-        })),
+        configureProject('pagebuilder', 'Pagebuilder', testReactComponents),
         configureProject('peregrine', 'Peregrine', inPackage => ({
-            // Make sure we can test extension files.
-            moduleFileExtensions: [
-                'ac.js',
-                'ee.js',
-                'mos.js',
-                'ce.js',
-                'js',
-                'json',
-                'jsx',
-                'node'
-            ],
-            // Define global variables.
-            globals,
             // Expose jsdom to tests.
             setupFiles: [
                 // Shim DOM properties not supported by jsdom
                 inPackage('scripts/shim.js'),
                 // Always mock `fetch` instead of doing real network calls
-                inPackage('scripts/fetch-mock.js'),
-                path.join('<rootDir>', 'scripts', 'jest-backend-setup.js'),
-                inPackage('scripts/matchMedia.js')
+                inPackage('scripts/fetch-mock.js')
+            ],
+            // Set up Enzyme React 16 adapter for testing React components
+            setupFilesAfterEnv: [
+                path.join('<rootDir>', 'scripts', 'jest-enzyme-setup.js')
             ],
             // Give jsdom a real URL for router testing.
             testURL: 'http://localhost/'
@@ -286,16 +289,6 @@ const jestConfig = {
                 path.join('<rootDir>', 'scripts', 'jest-backend-setup.js')
             ]
         })),
-        configureProject(
-            'extensions/venia-sample-payments-checkmo',
-            'Check Money Order Payment',
-            inPackage => ({
-                ...testReactComponents(inPackage),
-                setupFiles: [
-                    path.join('<rootDir>', 'scripts', 'jest-backend-setup.js')
-                ]
-            })
-        ),
         // Test any root CI scripts as well, to ensure stable CI behavior.
         configureProject('scripts', 'CI Scripts', () => ({
             testEnvironment: 'node',
@@ -311,16 +304,6 @@ const jestConfig = {
                     './magento-compatibility':
                         '<rootDir>/magento-compatibility.js'
                 }
-            })
-        ),
-        configureProject('pwa-theme-venia', 'Venia Theme', () => ({
-            testEnvironment: 'node'
-        })),
-        configureProject(
-            'extensions/experience-platform-connector',
-            'Experience platform connector',
-            () => ({
-                testEnvironment: 'node'
             })
         )
     ],
@@ -339,11 +322,7 @@ const jestConfig = {
         '!**/__[[:alpha:]]*__/**',
         '!**/.*/__[[:alpha:]]*__/**',
         // Not this file itself
-        '!jest.config.js',
-        // Exclude deprecated components from coverage report
-        '!**/venia-ui/lib/components/Checkout/**',
-        // Exclude storybook files
-        '!**/.storybook/**/*.js'
+        '!jest.config.js'
     ],
     // Don't look for test files in these directories.
     testPathIgnorePatterns: [

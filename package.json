@@ -46,6 +46,10 @@
     "watch:venia": "yarn venia run watch"
   },
   "dependencies": {
+    "@babel/helper-compilation-targets": "~7.18.9",
+    "@babel/helper-create-regexp-features-plugin": "~7.18.6",
+    "@babel/plugin-transform-classes": "~7.18.9",
+    "@babel/preset-env": "~7.18.10",
     "caniuse-lite": "~1.0.30001335"
   },
   "devDependencies": {
